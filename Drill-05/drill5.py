@@ -6,6 +6,7 @@ def handle_events():
     global running
     global x, y
     global x1, y1
+
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -17,13 +18,13 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
     pass
-
-
+    
 open_canvas(KPU_WIDTH, KPU_HEIGHT)
 kpu_ground = load_image('KPU_GROUND.png')
 character = load_image('animation_sheet.png')
 hand = load_image('hand_arrow.png')
 running = True
+
 x, y = KPU_WIDTH // 2, KPU_HEIGHT // 2
 x1, y1 = KPU_WIDTH // 2, KPU_HEIGHT // 2
 frame = 0
@@ -36,7 +37,6 @@ while running:
     character.clip_draw(frame * 100, 100 * 1, 100, 100, x1, y1)
     update_canvas()
     frame = (frame + 1) % 8
-
     delay(0.02)
     handle_events()
 
