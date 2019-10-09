@@ -30,7 +30,7 @@ hand = load_image('hand_arrow.png')
 running = True
 x, y = KPU_WIDTH // 2, KPU_HEIGHT // 2
 x2, y2 = KPU_WIDTH // 2, KPU_HEIGHT // 2
-dis = 3
+dir = 3
 x1 = x2
 y1 = y2
 frame = 0
@@ -43,16 +43,16 @@ while running:
     y2 += move_y
 
     if x1 - x2 < 0:
-        dis = 0
+        dir = 0
     elif x1 - x2 > 0:
-        dis = 1
+        dir = 1
     elif x1 - x2 == 0:
-        dis =3
+        dir =3
         
     clear_canvas()
     kpu_ground.draw(KPU_WIDTH // 2, KPU_HEIGHT // 2)
     hand.draw(x, y)
-    character.clip_draw(frame * 100, 100 * dis, 100, 100, x2, y2)
+    character.clip_draw(frame * 100, 100 * dir, 100, 100, x2, y2)
     update_canvas()
     frame = (frame + 1) % 8
     delay(0.02)
