@@ -1,42 +1,19 @@
 import game_framework
 from pico2d import *
 
-class Pause:
-    def __init__(self):
-        self.image = load_image('pause.png')
-        self.time = 0
-
-    def update(self):
-        self.time = 1 - self.time
-        delay(0.1)
-        pass
-
-    def draw(self):
-        self.image.draw(400, 300, 500, 500)
-
+name = "PauseState"
+image = None
 
 def enter():
-    global pause
-    pause = Pause()
+    global image
+    image = load_image('pause.png')
+    pass
 
 
 def exit():
-    global pause
-    del pause
-
-
-def update():
-    global pause
-    pause.update()
-
-
-def draw():
-    global pause
-    clear_canvas()
-    pause.update()
-    pause.draw()
-    update_canvas()
-
+    global image
+    del(image)
+    pass
 
 def handle_events():
     events = get_events()
@@ -45,9 +22,18 @@ def handle_events():
             game_framework.pop_state()
 
 
-def pause():
+def draw():
+    clear_canvas()
+    image.draw(400, 300, 500, 500)
+    update_canvas()
     pass
 
+
+def update():
+    pass
+
+def pause():
+    pass
 
 def resume():
     pass
