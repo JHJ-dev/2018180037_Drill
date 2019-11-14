@@ -49,13 +49,15 @@ class IdleState:
     @staticmethod
     def exit(boy, event):
         if event == SPACE:
-            boy.fire_ball()
+            boy.isjump = True
+            boy.jump()
         pass
 
     @staticmethod
     def do(boy):
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         boy.timer -= 1
+        boy.jump()
         if boy.timer == 0:
             boy.add_event(SLEEP_TIMER)
 
@@ -84,12 +86,14 @@ class RunState:
     @staticmethod
     def exit(boy, event):
         if event == SPACE:
-            boy.fire_ball()
+            boy.isjump = True
+            boy.jump()
 
     @staticmethod
     def do(boy):
         #boy.frame = (boy.frame + 1) % 8
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        boy.jump()
         boy.x += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
 
@@ -99,7 +103,6 @@ class RunState:
             boy.image.clip_draw(int(boy.frame) * 100, 100, 100, 100, boy.x, boy.y)
         else:
             boy.image.clip_draw(int(boy.frame) * 100, 0, 100, 100, boy.x, boy.y)
-
 
 class SleepState:
 
@@ -123,10 +126,6 @@ class SleepState:
             boy.image.clip_composite_draw(int(boy.frame) * 100, 200, 100, 100, -3.141592 / 2, '', boy.x + 25, boy.y - 25, 100, 100)
 
 
-
-
-
-
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState, SLEEP_TIMER: SleepState, SPACE: IdleState},
     RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, SPACE: RunState},
@@ -143,19 +142,14 @@ class Boy:
         self.dir = 1
         self.velocity = 0
         self.frame = 0
+        self.isjump = False
+        self.jumpy = 100
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
     def get_bb(self):
-        # fill here
-        return 0, 0, 0, 0
-
-
-    def fire_ball(self):
-        ball = Ball(self.x, self.y, self.dir * RUN_SPEED_PPS * 10)
-        game_world.add_object(ball, 1)
-
+        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -171,11 +165,20 @@ class Boy:
     def draw(self):
         self.cur_state.draw(self)
         self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % get_time(), (255, 255, 0))
-        #fill here
+        draw_rectangle(*self.get_bb())
 
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
+
+    def jump(self):
+        if self.isjump:
+            self.y += (self.jumpy * game_framework.frame_time) * 10
+            self.jumpy -= game_framework.frame_time
+            print(self.y, self.jumpy, game_framework.frame_time)
+
+    def stop(self):
+        self.isjump = False
 

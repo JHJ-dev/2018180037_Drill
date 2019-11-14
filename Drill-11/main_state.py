@@ -8,21 +8,26 @@ import game_world
 
 from boy import Boy
 from grass import Grass
-from ball import Ball
+from ball import Ball, BigBall
+from brick import Brick
 
 name = "MainState"
 
 boy = None
 grass = None
+brick = None
 balls = []
 big_balls = []
 
 
 def collide(a, b):
-    # fill here
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
     return True
-
-
 
 
 def enter():
@@ -34,10 +39,13 @@ def enter():
     grass = Grass()
     game_world.add_object(grass, 0)
 
-    # fill here for balls
+    global balls
+    balls = [Ball() for i in range(10)] + [BigBall() for i in range(20)]
+    game_world.add_objects(balls, 1)
 
-
-
+    global brick
+    brick = Brick()
+    game_world.add_object(brick, 1)
 
 
 def exit():
@@ -66,9 +74,26 @@ def update():
     for game_object in game_world.all_objects():
         game_object.update()
 
-    # fill here for collision check
+#소년 & 공 충돌
+    for ball in balls:
+        if collide(boy, ball):
+            balls.remove(ball)
+            game_world.remove_object(ball)
 
+#잔디 & 공 충돌
+    for ball in balls:
+        if collide(grass, ball):
+            ball.stop()
 
+#발판 & 공 충돌
+    for ball in balls:
+        if collide(brick, ball) and ball.y > brick.y + 20:
+            ball.stop()
+            ball.x += brick.dir * 200 * game_framework.frame_time
+
+#소년 & 잔디 충돌
+    if collide(grass, boy):
+        boy.stop()
 
 def draw():
     clear_canvas()
