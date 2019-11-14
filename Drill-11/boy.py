@@ -178,7 +178,7 @@ class Boy:
     def jump(self):
         if self.isjump:
             self.y += self.jumpy * game_framework.frame_time
-            self.jumpy -= 800 * game_framework.frame_time
+            self.jumpy -= 700 * game_framework.frame_time
 
     def stop(self):
         self.jumpy = 0
