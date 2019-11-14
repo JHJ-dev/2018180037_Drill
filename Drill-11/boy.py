@@ -48,10 +48,10 @@ class IdleState:
 
     @staticmethod
     def exit(boy, event):
-        if event == SPACE:
+        if event == SPACE and not boy.isjump:
             boy.isjump = True
+            boy.jumpy = RUN_SPEED_PPS * 3
             boy.jump()
-        pass
 
     @staticmethod
     def do(boy):
@@ -85,13 +85,13 @@ class RunState:
 
     @staticmethod
     def exit(boy, event):
-        if event == SPACE:
+        if event == SPACE and not boy.isjump:
             boy.isjump = True
+            boy.jumpy = RUN_SPEED_PPS * 3
             boy.jump()
 
     @staticmethod
     def do(boy):
-        #boy.frame = (boy.frame + 1) % 8
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         boy.jump()
         boy.x += boy.velocity * game_framework.frame_time
@@ -142,14 +142,16 @@ class Boy:
         self.dir = 1
         self.velocity = 0
         self.frame = 0
-        self.isjump = False
-        self.jumpy = 100
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
+        self.isjump = False
+        self.jumpy = 0
+        self.fall_speed = 30
+
     def get_bb(self):
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        return self.x - 25, self.y - 40, self.x + 25, self.y + 45
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -175,10 +177,10 @@ class Boy:
 
     def jump(self):
         if self.isjump:
-            self.y += (self.jumpy * game_framework.frame_time) * 10
-            self.jumpy -= game_framework.frame_time
-            print(self.y, self.jumpy, game_framework.frame_time)
+            self.y += self.jumpy * game_framework.frame_time
+            self.jumpy -= 800 * game_framework.frame_time
 
     def stop(self):
+        self.jumpy = 0
         self.isjump = False
 

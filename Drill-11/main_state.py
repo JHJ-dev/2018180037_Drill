@@ -95,6 +95,13 @@ def update():
     if collide(grass, boy):
         boy.stop()
 
+#소년 & 발판 충돌
+    if collide(brick, boy) and boy.y > brick.y + 20:
+        boy.isjump = False
+        boy.x += brick.dir * 200 * game_framework.frame_time
+        if(boy.x < brick.x - 100 or brick.x + 100 < boy.x):
+            boy.isjump = True
+
 def draw():
     clear_canvas()
     for game_object in game_world.all_objects():
